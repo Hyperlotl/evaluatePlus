@@ -31,7 +31,7 @@ By using this software, you agree that all responsibility lies with the user.
         getInfo() {
             return {
                 id: 'jseval',
-                name: 'functions+',
+                name: 'evaluate+',
                 color1: "#aeaeae",
                 blocks: [
                      {
