@@ -213,28 +213,27 @@ function loadCodeMirror(callback) {
         }
         showLegacy(){
             if (confirm('These legacy blocks are extremely outdated and were used for debugging in eariler versions. They are extremely manual and have no use now. Show legacy blocks anyway?')){
-                this.hideLegacy=false
+                this.hideLegacy=false;
                 Scratch.vm.extensionManager.refreshBlocks();
-                //alert('legacy blocks unhidden! You have to switch sprites for the legacy blocks to be visible.')
             }
         }
         refreshBlocks(){
             if (true){
+                const phl = this.hideLegacy;
                 this.hideLegacy=false
-                Scratch.vm.extensionManager.refreshBlocks();
-                this.hideLegacy=true
+                Scratch.vm.extensionManager.refreshBlocks();//temporaily show legacy blocks
+                if (phl);{
+                this.hideLegacy=true//if legacy blocks were originally hidden, re hide em :3
                 Scratch.vm.extensionManager.refreshBlocks();//force a block palette refresh
-                //alert('legacy blocks unhidden! You have to switch sprites for the legacy blocks to be visible.')
+                }
             }
         }
-        //Stolen from ObviousAlex :3
         functionsMenu() {
         return Object.keys(this.functions).length == 0
             ? ["no functions defined yet"]
             : Object.keys(this.functions);
         }
-
-        //Also stolen from ObviousAlex :3
+        //Stolen from ObviousAlex :3
         _setupExtensionStorage() {
             if (!runtime.extensionStorage) return;
 
@@ -278,7 +277,6 @@ function loadCodeMirror(callback) {
             this.saveFunctions();
             return Object.keys(this.functions).length>=1?Object.keys(this.functions):["no functions defined"]
         }
-
         funcAddLine(args){
             if (this.functions[args.N] !== undefined){
                 this.functions[args.N] = `${this.functions[args.N]}${args.V};\n`;
@@ -287,21 +285,29 @@ function loadCodeMirror(callback) {
             }
             this.saveFunctions();
         }
-
         getFunc(args){
             return this.functions[args.N] || `no function named ${args.N} defined.`;
         }
-
         runFunc(args){
             this.saveFunctions();
+            //defining custom functions that you can run from within your JS functions (they can technically be acheived in vanilla JS, these just add convenience :3)
             const triggerHats =  function() {//u can call this function inside ur custom JS scripts to make activate all hat blocks
                 runtime.startHats('jseval_funcActivation');
                 runtime.startHats('jseval_targetedFuncActivation', {FN: args.N});
             }
-            eval(this.functions[args.N]);
-            
+            const setVar = function(tVar,nVal){//self explainatory
+                const targetedV = runtime.getTargetForStage().lookupVariableByNameAndType(tVar, "");
+                if (!targetedV) {return;}//stop early if no variable of this sort exists
+                targetedV.value = nVal;
+            }
+            const getVar = function(tVar){//ALSO self explainatory!
+                const targetedV = runtime.getTargetForStage().lookupVariableByNameAndType(tVar, "");
+                return targetedV ? targetedV : "";
+                
+            }
+            eval(this.functions[args.N]);  
         }
-        //UI nonsense
+        //UI nonsense.
         initOverlay(){
             const overlay = document.createElement('div');
             overlay.style.position = 'fixed';
