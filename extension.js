@@ -301,7 +301,7 @@ function loadCodeMirror(callback) {
                 targetedV.value = nVal;
             }
             const getVar = function(tVar){//ALSO self explainatory!
-                const targetedV = runtime.getTargetForStage().lookupVariableByNameAndType(tVar, "");
+                const targetedV = runtime.getTargetForStage().lookupVariableByNameAndType(tVar, "").value;
                 return targetedV ? targetedV : "";
                 
             }
